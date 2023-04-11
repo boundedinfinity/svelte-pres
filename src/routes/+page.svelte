@@ -1,19 +1,12 @@
 <script lang="ts">
-    import Center from "$lib/center.svelte";
-    import Grid from "$lib/grid.svelte";
-    import GridItem from "$lib/gridItem.svelte";
+    import {io} from 'socket.io-client'
+    import {onMount} from 'svelte'
+
+    const socket = io({
+        host: "http://localhost:5173"
+    } )
+    socket.on('message', (message) => {
+        console.log(message)
+    })
 </script>
-
-<Grid debug={false}>
-    <GridItem row={1} col={1} debug={false}>1,1</GridItem>
-    <GridItem row={12} col={1} debug={false}>12,1</GridItem>
-
-    <GridItem row={1} col={12} debug={false}>1,12</GridItem>
-
-    <GridItem row={6} col={6} debug={false}>6,6</GridItem>
-
-    <GridItem row={12} col={12} debug={false}>12,12</GridItem>
-</Grid>
-
-<style>
-</style>
+Nothing here.

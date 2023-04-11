@@ -1,3 +1,8 @@
+<script lang="ts" context="module">
+    export const meta = {
+        title: 'TITLE'
+    }
+</script>
 <script lang="ts">
   export let h: number = 100;
   export let w: number = 100;

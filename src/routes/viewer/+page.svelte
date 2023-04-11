@@ -1,13 +1,22 @@
 <script lang="ts">
     import Overlay from "$lib/overlay.svelte";
+    import { slides, index } from "$lib/slides";
+
     export let debug: boolean = false;
     export let h: number = 97;
-    export let w: number = 98;
+    export let w: number = 97;
+
+    $: slide = $slides[$index];
+    $: title = `[${$index + 1} of ${$slides.length}] ${slide.title}`;
 </script>
+
+<svelte:head>
+    <title>{title}</title>
+</svelte:head>
 
 <main style="--h: {h}vh; --w: {w}vw;">
     <div class="content" class:debug-content={debug}>
-        <slot />
+        <svelte:component this={slide.component} />
     </div>
 
     <div class="overlay" class:debug-overlay={debug}>
