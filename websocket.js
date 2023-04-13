@@ -7,12 +7,15 @@ export const webSocketServer = {
         const io = new Server(server.httpServer)
 
         io.on('connection', (socket) => {
-            socket.broadcast.emit("message", 'websocket server connected');
-            console.log('websocket client connected')
+            console.log("server: client connected")
+            
+            socket.onAny((event, message) => {
+                socket.broadcast.emit(event, message);
+            })
 
-            socket.on('message', (message) => {
-                socket.broadcast.emit("message", message);
-            });
+            socket.on("disconnect", () => {
+                console.log("server: client disconnected")
+            })
         });
     }
 };

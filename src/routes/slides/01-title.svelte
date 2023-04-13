@@ -1,12 +1,13 @@
 <script lang="ts" context="module">
     export const meta = {
-        title: 'Intro'
+        title: 'This is slide 1'
     }
 </script>
 
 <script lang="ts">
     import Center from '$lib/center.svelte'
+    import Text from '$lib/text.svelte'
 </script>
 
-<Center><h1>This is an intro page.</h1></Center>
+<Center><Text>This is slide 1.</Text></Center>
 

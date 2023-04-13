@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Overlay from "$lib/overlay.svelte";
+    import Overlay from "./overlay.svelte";
     import { slides, index } from "$lib/slides";
 
     export let debug: boolean = false;
@@ -29,6 +29,7 @@
         position: relative;
         height: var(--h);
         width: var(--w);
+        background-color: white;
     }
 
     .content {
@@ -42,6 +43,7 @@
     .debug-content {
         border: 1px solid red;
     }
+
     .overlay {
         position: absolute;
         height: var(--h);
@@ -49,6 +51,7 @@
         top: 0;
         left: 0;
     }
+
     .debug-overlay {
         border: 1px solid orange;
     }

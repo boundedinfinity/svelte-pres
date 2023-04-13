@@ -1,34 +1,29 @@
-<script lang="ts" context="module">
-    export const meta = {
-        title: 'TITLE'
-    }
-</script>
 <script lang="ts">
-  export let h: number = 100;
-  export let w: number = 100;
-  export let debug: boolean = false;
+    export let h: number = 100;
+    export let w: number = 100;
+    export let debug: boolean = false;
 </script>
 
 <main class:debug1={debug} style="--h: {h}%; --w: {w}%;">
-  <div class:debug2={debug}>
-    <slot />
-  </div>
+    <div class:debug2={debug}>
+        <slot />
+    </div>
 </main>
 
 <style>
-  main {
-    display: grid;
-    height: var(--h);
-    width: var(--w);
-    justify-content: center;
-    align-content: center;
-  }
+    main {
+        display: grid;
+        height: var(--h);
+        width: var(--w);
+        justify-content: center;
+        align-content: center;
+    }
 
-  .debug1 {
-    border: 1px solid red;
-  }
+    .debug1 {
+        border: 1px solid red;
+    }
 
-  .debug2 {
-    border: 1px solid blue;
-  }
+    .debug2 {
+        border: 1px solid blue;
+    }
 </style>
