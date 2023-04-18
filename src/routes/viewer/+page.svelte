@@ -22,9 +22,9 @@
         </div>
     {/key}
 
-    <!-- <div class="overlay" class:debug-overlay={debug}>
+    <div class="overlay" class:debug-overlay={debug}>
         <Overlay {debug} />
-    </div> -->
+    </div>
 </main>
 
 <style>
