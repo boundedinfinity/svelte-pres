@@ -1,6 +1,7 @@
 <script lang="ts">
     import Overlay from "./overlay.svelte";
     import { slides, index } from "$lib/slides";
+    import { fade } from "svelte/transition";
 
     export let debug: boolean = false;
     export let h: number = 97;
@@ -14,14 +15,16 @@
     <title>{title}</title>
 </svelte:head>
 
-<main style="--h: {h}vh; --w: {w}vw;">
-    <div class="content" class:debug-content={debug}>
-        <svelte:component this={slide.component} />
-    </div>
+<main style="--h: {h}vh; --w: {w}vw;" transition:fade>
+    {#key $index}
+        <div class="content" class:debug-content={debug} transition:fade>
+            <svelte:component this={slide.component} />
+        </div>
+    {/key}
 
-    <div class="overlay" class:debug-overlay={debug}>
+    <!-- <div class="overlay" class:debug-overlay={debug}>
         <Overlay {debug} />
-    </div>
+    </div> -->
 </main>
 
 <style>
