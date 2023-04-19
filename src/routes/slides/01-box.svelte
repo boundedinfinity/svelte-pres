@@ -12,10 +12,10 @@
 <Center>
         <!-- <code>test = fn(test)</code> -->
         <Box pattern="
-        _ _ A A 
-        _ _ _ _ _ B 
+        A A A A 
+        A A A A _ B 
         _ 
-        _ _ C _ _ _
+        _ _ C
         _ 
         _ D  
     " />

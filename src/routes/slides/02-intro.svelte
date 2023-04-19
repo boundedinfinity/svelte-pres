@@ -10,13 +10,13 @@
 </script>
 
 <Center>
-    
-        <!-- <code>test = fn(test)</code> -->
-        <Box pattern="
-        _ _ A _ _
-        _ _ _ _ B 
-        _ _ _ _ _ 
-        _ _ C _ _ 
-        _ _ _ _ D
-    " />
+    <!-- <code>test = fn(test)</code> -->
+    <Box pattern="
+    _
+    _ _ _ _ _ B
+    A A
+    _ _ C
+    _ 
+    _ _ _ D
+" />
 </Center>

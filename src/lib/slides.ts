@@ -20,7 +20,7 @@ function safeIndex(i: number): number {
     let v = i
     if (v > l) v = l
     if (v < 0) v = 0
-    console.log(`i: ${i}, l: ${l}, v: ${v}`)
+    // console.log(`i: ${i}, l: ${l}, v: ${v}`)
     return v
 }
 
@@ -66,8 +66,6 @@ socket.on("index", (raw: string) => {
     index.set(message.index)
 });
 
-
-
 class MessageTest1 {
     x: number
     constructor(x: number) {
@@ -81,14 +79,6 @@ class MessageTest2 {
         this.y = y
     }
 }
-
-function test<T extends Object>(t: T) {
-    console.log("=============> " + t)
-    console.log("=============> " + t.constructor.name)
-}
-
-test(new MessageTest1(1))
-test(new MessageTest2(2))
 
 export interface SlideMessage {
     index: number;
