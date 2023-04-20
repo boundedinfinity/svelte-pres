@@ -11,12 +11,30 @@
 
 <Center>
         <!-- <code>test = fn(test)</code> -->
+        <!-- <Box pattern="
+        A[X,Y]  _
+        B
+        ===
+        A:
+            text: SOME A
+        B:
+            text: SOME B
+        X:
+            text: SOME X
+    " /> -->
         <Box pattern="
-        A A A A 
+        A[X,Y] A A A _ _
         A A A A _ B 
-        _ 
-        _ _ C
-        _ 
-        _ D  
+        _ _ _ _ _ _
+        _ _ C _ _ _
+        _ _ _ _ _ _
+        _ D
+        ===
+        A:
+            text: SOME A
+        B:
+            text: SOME B
+        X:
+            text: SOME X
     " />
 </Center>
