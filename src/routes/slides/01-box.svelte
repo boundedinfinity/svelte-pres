@@ -9,32 +9,26 @@
     import Box from "$lib/box.svelte";
 </script>
 
-<Center>
-        <!-- <code>test = fn(test)</code> -->
-        <!-- <Box pattern="
-        A[X,Y]  _
-        B
-        ===
-        A:
-            text: SOME A
-        B:
-            text: SOME B
-        X:
-            text: SOME X
-    " /> -->
-        <Box pattern="
-        A[X,Y] A A A _ _
-        A A A A _ B 
-        _ _ _ _ _ _
-        _ _ C _ _ _
-        _ _ _ _ _ _
+<!-- <Center> -->
+    <Box
+        pattern="
+        _ _ _ A[X,Y] A _ _
+        _ _ _ A A _ B 
+        _
+        _ _ _ _ _ C
+        _
         _ D
         ===
         A:
-            text: SOME A
+            text: |
+                TLS X.509 Certificate<br />
+                with another line
         B:
-            text: SOME B
+            text: SSL Private Key
         X:
-            text: SOME X
-    " />
-</Center>
+            text: SSL Public Key
+        Y:
+            text: User information
+    "
+    />
+<!-- </Center> -->

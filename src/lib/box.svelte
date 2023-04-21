@@ -1,15 +1,17 @@
 <script lang="ts">
     import { pattern2lines, lines2gridArea, lines2elems } from "./box-utils";
+    import BoxItem from "$lib/boxItem.svelte";
+    import { children } from "svelte/internal";
 
     export let pattern: string;
-    export let containerOutline: boolean = false;
+    export let outline: boolean = true;
     export let itemOutline: boolean = true;
     export let gap: string = "0.5rem";
     export let blank = "_";
     export let separator = "===";
     export let minRows = 0;
     export let minCols = 0;
-    export let debug = true;
+    export let debug = false;
 
     let lines = pattern2lines(
         pattern,
@@ -17,6 +19,7 @@
         minRows,
         minCols,
         separator,
+        itemOutline,
         debug
     );
     const area = lines2gridArea(lines, debug);
@@ -24,13 +27,11 @@
 </script>
 
 <main
-    class:containerOutline
-    style={`--area: ${area}; --gap: ${gap};`}
+    class:outline
+    style={`--area: ${area}; --gap: ${gap}; --cols: ${lines[0].length}; --rows: ${lines.length}`}
 >
     {#each elems as elem}
-        <div class="item" class:itemOutline style={`grid-area: ${elem.id}`}>
-            {elem.text}
-        </div>
+        <BoxItem item={elem} />
     {/each}
 </main>
 
@@ -38,32 +39,17 @@
     main {
         display: grid;
         grid-template-areas: var(--area);
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(5, 1fr);
+        grid-template-columns: repeat(--cols, 1fr);
+        grid-template-rows: repeat(--rows, 1fr);
+        width: 100%;
+        height: 100%;
         gap: var(--gap, 0.5rem);
     }
 
-    .item {
-        display: grid;
-        justify-content: center;
-        align-content: center;
-
-        margin-inline: var(--item-margin-inline, 0.25rem);
-        margin-block: var(--item-margin-block, 0.25rem);
-        padding-inline: var(--item-padding-inline, 0.25rem);
-        padding-block: var(--item-padding-block, 0.25rem);
-        background-color: var(--item-background-color, white);
-        color: var(--item-background-color, darkblue);
-    }
-
-    .itemOutline {
-        border-width: var(--item-border-width, 1px);
-        border-color: var(--item-border-color, darkblue);
-        border-style: var(--item-border-color, solid);
-        border-radius: var(--item-border-radius, 5px);
-    }
-
-    .containerOutline {
-        border: 2px solid blue;
+    .outline {
+        border-color: var(--border-color, darkblue);
+        border-style: var(--border-color, solid);
+        border-width: var(--border-color, 2px);
+        border-radius: var(--border-color, 3px);
     }
 </style>

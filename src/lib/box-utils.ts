@@ -1,25 +1,12 @@
 import { load } from "js-yaml";
 import { dump } from "$lib/util";
+import _ from "lodash";
 
-interface StyleConfig {
-    borderColor?: string;
-    borderRadius?: string;
-    borderStyle?: string;
-    borderWidth?: string;
-    backgroundColor?: string;
-    color?: string;
+interface MapDescriptor {
+    symbols: string[][],
+    rows: number,
+    cols: number,
 }
-
-const defaultColors: StyleConfig[] = [
-    {
-        borderColor: "darkblue",
-        borderWidth: "1px",
-        borderRadius: "5px",
-        borderStyle: "solid",
-        backgroundColor: "white",
-        color: "darkblue",
-    },
-];
 
 class ItemConfig {
     id: string;
@@ -99,39 +86,46 @@ function parseMap(
     minRows: number,
     minCols: number,
     debug: boolean
-): string[][] {
-    debug = true;
+): MapDescriptor {
+    const desc: MapDescriptor = {
+        symbols: [],
+        rows: minRows,
+        cols: minCols,
+    }
+
     if (rawTable) {
-        let symbols: string[][] = rawTable
+        desc.symbols = rawTable
             .split("\n")
             .map((line) => line.trim())
             .filter((line) => line.length > 0)
             .map((line) => line.replaceAll(/\s+/g, " "))
             .map((line) => line.split(" "));
 
-        if (debug) dump(symbols, { name: "symbols" });
+        if (debug) dump(desc.symbols, { name: "symbols" });
 
-        const rows = Math.max(minRows, lines2maxRow(symbols));
-        const cols = Math.max(minCols, lines2maxCol(symbols));
-        if (debug) console.log(`raw: rows: ${rows}, cols: ${cols}`);
+        desc.rows = Math.max(minRows, lines2maxRow(desc.symbols));
+        desc.cols = Math.max(minCols, lines2maxCol(desc.symbols));
 
-        while (symbols.length < rows) symbols.push([]);
+        if (debug) console.log(`raw: rows: ${desc.rows}, cols: ${desc.cols}`);
 
-        symbols.forEach((symbol) => {
-            while (symbol.length < cols) symbol.push(blank);
+        while (desc.symbols.length < desc.rows) desc.symbols.push([]);
+
+        desc.symbols.forEach((symbol) => {
+            while (symbol.length < desc.cols) symbol.push(blank);
         });
 
-        if (debug) console.log(`normalized: rows: ${rows}, cols: ${cols}`);
+        if (debug) console.log(`normalized: rows: ${desc.rows}, cols: ${desc.cols}`);
 
-        symbols = symbols.map((symbol) =>
+        desc.symbols = desc.symbols.map((symbol) =>
             symbol.map((id) => nextId(id, blank))
         );
-        if (debug) dump(symbols, { name: "symbols (with ids)" });
 
-        return symbols;
+        if (debug) dump(desc.symbols, { name: "symbols (with ids)" });
+
+        desc.symbols = desc.symbols;
     }
 
-    return [];
+    return desc;
 }
 
 function pattern2lines(
@@ -140,14 +134,15 @@ function pattern2lines(
     minRows: number,
     minCols: number,
     separator: string,
+    outlined: boolean,
     debug: boolean
 ): ItemConfig[][] {
     if (debug) dump(pattern, { name: "pattern2lines(pattern)" });
     let [rawTable, rawConfig] = pattern.split(separator);
-    const symbols = parseMap(rawTable, blank, minRows, minCols, debug);
+    const mapDesc = parseMap(rawTable, blank, minRows, minCols, debug);
     const configMap = paraseConfig(rawConfig, debug);
 
-    const configs = symbols.map((symbols) =>
+    let configs = mapDesc.symbols.map((symbols) =>
         symbols.map((symbol) => {
             let ic = parseSymbol(symbol, debug);
 
@@ -160,14 +155,18 @@ function pattern2lines(
                 }
 
                 if (root.id.startsWith(blank) && debug) root.text = blank;
+
                 if (!root.text) root.text = rootId;
 
                 if (root.children) {
                     for (const child of root.children) walk(child);
                 }
+
+                if (!root.style) root.style = nextStyle();
+                if (!root.outlined) root.outlined = outlined;
             }
 
-            walk(ic)
+            walk(ic);
             return ic;
         })
     );
@@ -212,7 +211,9 @@ function lines2elems(
             elems = lines.flat();
         } else {
             elems = [
-                ...new Set(lines.flat().filter((e) => !e.id.startsWith(blank))),
+                ..._.uniqBy(lines.flat(), (e) => e.id).filter(
+                    (e) => !e.id.startsWith(blank)
+                ),
             ];
         }
 
@@ -221,6 +222,34 @@ function lines2elems(
     }
 
     return [];
+}
+
+function cssPropObj(orig: string, config: StyleConfig | undefined): string {
+    if (!config) return orig;
+    let style = orig;
+
+    Object.entries(config).forEach(([name, value]) => {
+        style = cssProp(style, name, value);
+    });
+
+    return style;
+}
+
+function cssProp(
+    orig: string,
+    name: string,
+    value: string | undefined
+): string {
+    if (!value || value.length <= 0) return orig;
+
+    let style = orig;
+    if (style && style.length > 0) style += " ";
+
+    name = name.replaceAll(/([A-Z])/g, `-$1`).toLowerCase();
+
+    style += `--item-${name}: ${value};`;
+
+    return style;
 }
 
 export {
@@ -233,6 +262,8 @@ export {
     lines2elems,
     type ItemConfig,
     type StyleConfig,
+    cssProp,
+    cssPropObj,
 };
 
 let id = 0;
@@ -247,15 +278,41 @@ function nextId(symbol: string, blank: string): string {
     return symbol;
 }
 
+interface StyleConfig {
+    marginInline?: string;
+    marginBlock?: string;
+    paddingInline?: string;
+    paddingBlock?: string;
+    borderColor?: string;
+    borderRadius?: string;
+    borderStyle?: string;
+    borderWidth?: string;
+    backgroundColor?: string;
+    color?: string;
+    justifyContent?: string;
+    alignContent?: string;
+}
+
+const defaultColors: StyleConfig[] = [
+    {
+        marginInline: "0.25rem",
+        marginBlock: "0.25rem",
+        backgroundColor: "skyblue",
+        color: "darkblue",
+        borderColor: "darkblue",
+    },
+];
+
 function nextStyle(): StyleConfig {
-    if (color > defaultColors.length) {
-        color = 0;
-    }
+    return defaultColors[0];
+    // if (color > defaultColors.length) {
+    //     color = 0;
+    // }
 
-    const current = defaultColors[color];
-    color++;
+    // const current = defaultColors[color];
+    // color++;
 
-    return current;
+    // return current;
 }
 
 // interface LightDark {

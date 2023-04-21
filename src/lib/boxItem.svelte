@@ -1,47 +1,46 @@
 <script lang="ts">
-    import { dump } from "$lib/util";
-    export let blank: string = "_";
-    export let pattern: string;
-    export let outlined: boolean = true;
-
-    let symbols: string[] = [];
-    let current = "";
-
-    // console.log(pattern)
-
-    for (let i = 0; i < pattern.trim().length; i++) {
-        switch (pattern[i]) {
-            case "[":
-                symbols.push(current);
-                current = ''
-                break;
-            case "]":
-                break;
-            default:
-                current += pattern[i]
-        }
-    }
-
-    if(current) symbols.push(current)
-    symbols = symbols.filter(s => s != blank)
-
-    dump(symbols)
+    import type { ItemConfig } from "$lib/box-utils";
+    import { cssProp, cssPropObj } from "$lib/box-utils";
+    export let item: ItemConfig;
+    let style = cssProp("", "grid-area", item.id);
+    style = cssPropObj(style, item.style);
 </script>
 
-<section class:outlined={outlined && symbols && symbols.length > 0}>
-    {symbols.join('-')}
+<section class:outline={item.outlined} {style}>
+    <div>
+        <div>
+            {@html item.text}
+        </div>
+
+        <div><slot /></div>
+
+        {#if item.children && item.children.length}
+            {#each item.children as child}
+                <svelte:self item={child} />
+            {/each}
+        {/if}
+    </div>
 </section>
 
 <style>
     section {
-        padding-inline: 1rem;
-        padding-block: .5rem;
+        grid-area: var(--item-grid-area);
         display: grid;
-        justify-content: center;
-        align-content: center;
+        justify-content: var(--item-justify-content, center);
+        align-content: var(--item-align-content, center);
+
+        margin-inline: var(--item-margin-inline, 0.25rem);
+        margin-block: var(--item-margin-block, 0.25rem);
+        padding-inline: var(--item-padding-inline, 0.25rem);
+        padding-block: var(--item-padding-block, 0.25rem);
+        background-color: var(--item-background-color, white);
+        color: var(--item-color, darkblue);
+        border-radius: var(--item-border-radius, 3px);
     }
 
-    .outlined {
-        border: 2px solid blue;
+    .outline {
+        border-width: var(--item-border-width, 1px);
+        border-color: var(--item-border-color, darkblue);
+        border-style: var(--item-border-style, solid);
     }
 </style>

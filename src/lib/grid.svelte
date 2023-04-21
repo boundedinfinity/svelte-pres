@@ -4,7 +4,7 @@
     export let h: number = 100;
     export let w: number = 100;
     export let gap: string = "0.5rem";
-    export let debug: boolean = true;
+    export let debug: boolean = false;
 </script>
 
 <main
