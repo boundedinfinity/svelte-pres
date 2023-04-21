@@ -1,15 +1,22 @@
-import {} from "flatted";
+interface Options {
+    name?: string;
+    space?: number;
+}
 
-export function dump(obj: any, options?: { name?: string }) {
+export function dumps(obj: any, options?: Options): string {
     let str: string = "";
 
     if (options?.name) {
         str = `${options.name} `;
     }
 
-    str += JSON.stringify(obj, replacerFunc(), " ".repeat(4));
+    str += JSON.stringify(obj, replacerFunc(), options?.space || 0);
 
-    console.log(str);
+    return str;
+}
+
+export function dumpl(obj: any, options?: Options) {
+    console.log(dumps(obj, options));
 }
 
 // https://careerkarma.com/blog/converting-circular-structure-to-json/

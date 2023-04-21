@@ -53,9 +53,9 @@ const slides = writable<SlideInfo[]>([]);
 const viewerNav = writable<boolean>(true);
 const slideStateStore = writable<SlideState>(new SlideState())
 
-sender<SlideState>(slideStateStore, { debug: true });
-receiver<SlideState>(slideStateStore, { debug: true });
-saver<SlideState>(slideStateStore, { debug: true });
+sender<SlideState>(slideStateStore, { debug: false });
+receiver<SlideState>(slideStateStore, { debug: false });
+saver<SlideState>(slideStateStore, { debug: false });
 loader<SlideState>(slideStateStore, { debug: true });
 
 Object.entries(modules).forEach(([path, module]: any) => {

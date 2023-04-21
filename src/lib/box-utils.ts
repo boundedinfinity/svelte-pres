@@ -1,11 +1,11 @@
 import { load } from "js-yaml";
-import { dump } from "$lib/util";
+import { dumpl } from "$lib/util";
 import _ from "lodash";
 
 interface MapDescriptor {
-    symbols: string[][],
-    rows: number,
-    cols: number,
+    symbols: string[][];
+    rows: number;
+    cols: number;
 }
 
 class ItemConfig {
@@ -26,7 +26,7 @@ type ItemConfigMap = { [id: string]: ItemConfig };
 
 function paraseConfig(rawConfig: string, debug: boolean): ItemConfigMap {
     if (rawConfig) {
-        if (debug) dump(rawConfig, { name: "rawConfig" });
+        if (debug) dumpl(rawConfig, { name: "rawConfig" });
         const index = rawConfig.indexOf(rawConfig.trim());
 
         rawConfig = rawConfig
@@ -34,9 +34,9 @@ function paraseConfig(rawConfig: string, debug: boolean): ItemConfigMap {
             .map((l) => l.substring(index - 1))
             .join("\n");
 
-        if (debug) dump(rawConfig, { name: "rawConfig (normalized)" });
+        if (debug) dumpl(rawConfig, { name: "rawConfig (normalized)" });
         const configMap = load(rawConfig) as ItemConfigMap;
-        if (debug) dump(configMap, { name: "configMap" });
+        if (debug) dumpl(configMap, { name: "configMap" });
         return configMap;
     }
 
@@ -44,7 +44,7 @@ function paraseConfig(rawConfig: string, debug: boolean): ItemConfigMap {
 }
 
 function parseSymbol(symbol: string, debug: boolean): ItemConfig {
-    if (debug) dump(symbol, { name: "parseSymbol(symbol)" });
+    if (debug) dumpl(symbol, { name: "parseSymbol(symbol)" });
     const root = new ItemConfig();
     let current = root;
 
@@ -63,7 +63,7 @@ function parseSymbol(symbol: string, debug: boolean): ItemConfig {
                     current.children.push(child);
                 } else {
                     if (debug)
-                        dump(current, { name: "parseSymbol(no parent)" });
+                        dumpl(current, { name: "parseSymbol(no parent)" });
                 }
                 break;
             case ",":
@@ -76,7 +76,7 @@ function parseSymbol(symbol: string, debug: boolean): ItemConfig {
         }
     }
 
-    if (debug) dump(root, { name: "parseSymbol(root)" });
+    if (debug) dumpl(root, { name: "parseSymbol(root)" });
     return root;
 }
 
@@ -91,7 +91,7 @@ function parseMap(
         symbols: [],
         rows: minRows,
         cols: minCols,
-    }
+    };
 
     if (rawTable) {
         desc.symbols = rawTable
@@ -101,7 +101,7 @@ function parseMap(
             .map((line) => line.replaceAll(/\s+/g, " "))
             .map((line) => line.split(" "));
 
-        if (debug) dump(desc.symbols, { name: "symbols" });
+        if (debug) dumpl(desc.symbols, { name: "symbols" });
 
         desc.rows = Math.max(minRows, lines2maxRow(desc.symbols));
         desc.cols = Math.max(minCols, lines2maxCol(desc.symbols));
@@ -114,13 +114,14 @@ function parseMap(
             while (symbol.length < desc.cols) symbol.push(blank);
         });
 
-        if (debug) console.log(`normalized: rows: ${desc.rows}, cols: ${desc.cols}`);
+        if (debug)
+            console.log(`normalized: rows: ${desc.rows}, cols: ${desc.cols}`);
 
         desc.symbols = desc.symbols.map((symbol) =>
             symbol.map((id) => nextId(id, blank))
         );
 
-        if (debug) dump(desc.symbols, { name: "symbols (with ids)" });
+        if (debug) dumpl(desc.symbols, { name: "symbols (with ids)" });
 
         desc.symbols = desc.symbols;
     }
@@ -137,7 +138,7 @@ function pattern2lines(
     outlined: boolean,
     debug: boolean
 ): ItemConfig[][] {
-    if (debug) dump(pattern, { name: "pattern2lines(pattern)" });
+    if (debug) dumpl(pattern, { name: "pattern2lines(pattern)" });
     let [rawTable, rawConfig] = pattern.split(separator);
     const mapDesc = parseMap(rawTable, blank, minRows, minCols, debug);
     const configMap = paraseConfig(rawConfig, debug);
@@ -171,19 +172,19 @@ function pattern2lines(
         })
     );
 
-    if (debug) dump(configs, { name: "configs" });
+    if (debug) dumpl(configs, { name: "configs" });
 
     return configs;
 }
 
 function lines2maxRow(lines: string[][]): number {
     if (lines) return lines.length;
-    return -1;
+    return 0;
 }
 
 function lines2maxCol(lines: string[][]): number {
     if (lines) return lines.reduce((acc, cur) => Math.max(acc, cur.length), 0);
-    return -1;
+    return 0;
 }
 
 function lines2gridArea(icTable: ItemConfig[][], debug: boolean): string {
@@ -192,7 +193,7 @@ function lines2gridArea(icTable: ItemConfig[][], debug: boolean): string {
             .map((ics) => ics.map((ic) => ic.id).join(" "))
             .map((x) => `"${x}"`)
             .join(" ");
-        if (debug) dump(area, { name: "area" });
+        if (debug) dumpl(area, { name: "area" });
         return area;
     }
 
@@ -217,7 +218,7 @@ function lines2elems(
             ];
         }
 
-        if (debug) dump(elems);
+        if (debug) dumpl(elems);
         return elems;
     }
 
@@ -253,7 +254,7 @@ function cssProp(
 }
 
 export {
-    dump,
+    dumpl,
     nextId,
     pattern2lines,
     lines2maxRow,

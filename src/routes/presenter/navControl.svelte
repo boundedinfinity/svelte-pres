@@ -13,11 +13,21 @@
     </div>
     <div>Scale:</div>
     <div>
-        <input type="number" bind:value={$navStateStore.scale} min=0 max=10 />
+        <input
+            type="number"
+            bind:value={$navStateStore.scale}
+            min="1"
+            max="10"
+        />
     </div>
     <div>Opacity:</div>
     <div>
-        <input type="number" bind:value={$navStateStore.opacity} min=0 max=100 />
+        <input
+            type="number"
+            bind:value={$navStateStore.opacity}
+            min="0"
+            max="100"
+        />
     </div>
 </main>
 

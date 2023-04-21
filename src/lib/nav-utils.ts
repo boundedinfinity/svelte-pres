@@ -18,9 +18,9 @@ class NavState {
 
 const navStateStore = writable<NavState>(new NavState());
 
-sender<NavState>(navStateStore, { debug: true });
-receiver<NavState>(navStateStore, { debug: true });
-saver<NavState>(navStateStore, { debug: true });
+sender<NavState>(navStateStore, { debug: false });
+receiver<NavState>(navStateStore, { debug: false });
+saver<NavState>(navStateStore, { debug: false });
 loader<NavState>(navStateStore, { debug: true });
 
 export { type NavState, navStateStore };
