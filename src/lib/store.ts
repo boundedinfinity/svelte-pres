@@ -52,11 +52,3 @@ export function fancy<T extends Object>(value: T): Writable<T> {
         },
     }
 }
-
-
-// socket.on("index", (raw: string) => {
-//     // console.log(`raw: ${raw}`);
-//     const message: SlideMessage = JSON.parse(raw);
-//     console.log(`received: ${JSON.stringify(message)}`);
-//     index.set(message.index)
-// });

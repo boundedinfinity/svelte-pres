@@ -1,10 +1,14 @@
 <script lang="ts">
     import Nav from "$lib/nav.svelte";
-    import { slides, index } from "$lib/slides";
-    $: slide = $slides[$index];
-    $: title = `[${$index + 1} of ${$slides.length}] ${slide.title}`;
+    import NavControl from "./navControl.svelte";
+    import { slides, slideStateStore } from "$lib/slides";
+    $: slide = $slides[$slideStateStore.index];
+    $: title = `[${$slideStateStore.index + 1} of ${$slides.length}] ${
+        slide.title
+    }`;
     export let h: number = 97;
     export let w: number = 97;
+    export let debug: boolean = false;
 </script>
 
 <svelte:head>
@@ -12,13 +16,17 @@
 </svelte:head>
 
 <div class="grid" style="--h: {h}vh; --w: {w}vw;">
-    <div class="list debug">
+    <div class="list" class:debug>
         <ul>
             {#each $slides as slide, i}
                 <li>
                     <button
-                        class:current={i == $index}
-                        on:click={() => index.set(i)}
+                        class:current={i == $slideStateStore.index}
+                        on:click={() =>
+                            slideStateStore.update((s) => {
+                                s.goto(i);
+                                return s;
+                            })}
                     >
                         slide: {i} - {slide.title}
                     </button>
@@ -27,12 +35,13 @@
         </ul>
     </div>
 
-    <div class="viewer debug">
+    <div class="viewer" class:debug>
         <svelte:component this={slide.component} />
     </div>
 
-    <div class="info debug">
-        <Nav scale={3} />
+    <div class="info" class:debug>
+        <Nav />
+        <NavControl />
     </div>
 </div>
 
@@ -51,6 +60,8 @@
 
     .info {
         grid-area: i;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .current {

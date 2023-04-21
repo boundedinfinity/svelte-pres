@@ -6,94 +6,57 @@
 import p from "path-browserify";
 import { browser } from "$app/environment";
 import { writable, get } from "svelte/store";
-import { io } from "socket.io-client";
-import { dump } from "./util";
+import { sender, receiver } from "$lib/socket-utils";
+import { saver, loader } from "$lib/local-storage-utils";
 
-const debug = false
+const debug = false;
 
 const modules = import.meta.glob("../routes/slides/**/*.svelte", {
     eager: true,
 });
 // const modules = import.meta.glob("../routes/**/+page.svelte", { eager: true });
 // const modules = import.meta.glob("./*.svelte", { eager: true });
-const socket = io();
+
+
+
+export class SlideState {
+    index: number;
+    max: number;
+
+    constructor() {
+        this.index = 0
+        this.max = 0
+    }
+
+    next() {
+        this.index++
+        this.normalize()
+    }
+
+    prev() {
+        this.index--
+        this.normalize()
+    }
+
+    goto(index: number) {
+        this.index = index
+        this.normalize()
+    }
+
+    private normalize() {
+        if(this.index > this.max) this.index = this.max
+        if(this.index < 0) this.index = 0
+    }
+}
+
 const slides = writable<SlideInfo[]>([]);
 const viewerNav = writable<boolean>(true);
+const slideStateStore = writable<SlideState>(new SlideState())
 
-function safeIndex(i: number): number {
-    const l = get(slides).length - 1;
-    let v = i;
-    if (v > l) v = l;
-    if (v < 0) v = 0;
-    if(debug) console.log(`i: ${i}, l: ${l}, v: ${v}`)
-    return v;
-}
-
-function createIndex() {
-    let initial = 0;
-
-    if (browser) {
-        try {
-            const raw = window.localStorage.getItem("index");
-            initial = raw ? Number.parseFloat(raw) : 0;
-            initial = safeIndex(initial);
-        } catch (e) {}
-    }
-
-    const { subscribe, set, update } = writable<number>(initial);
-
-    return {
-        subscribe,
-        set,
-        update,
-        next: () => update((i) => safeIndex(i + 1)),
-        prev: () => update((i) => safeIndex(i - 1)),
-    };
-}
-
-const index = createIndex();
-
-index.subscribe((value) => {
-    const message: SlideMessage = { index: value };
-    const raw = JSON.stringify(message);
-    if(debug) console.log(`sending: ${raw}`)
-    socket.emit("index", raw);
-
-    if (browser) {
-        window.localStorage.setItem("index", value.toString());
-    }
-});
-
-socket.on("index", (raw: string) => {
-    if(debug) console.log(`raw: ${raw}`);
-    const message: SlideMessage = JSON.parse(raw);
-    console.log(`received: ${JSON.stringify(message)}`);
-    index.set(message.index);
-});
-
-class MessageTest1 {
-    x: number;
-    constructor(x: number) {
-        this.x = x;
-    }
-}
-
-class MessageTest2 {
-    y: number;
-    constructor(y: number) {
-        this.y = y;
-    }
-}
-
-export interface SlideMessage {
-    index: number;
-}
-
-export interface SlideInfo {
-    path: string;
-    title: string;
-    component: any;
-}
+sender<SlideState>(slideStateStore, { debug: true });
+receiver<SlideState>(slideStateStore, { debug: true });
+saver<SlideState>(slideStateStore, { debug: true });
+loader<SlideState>(slideStateStore, { debug: true });
 
 Object.entries(modules).forEach(([path, module]: any) => {
     const slide: SlideInfo = {
@@ -103,7 +66,21 @@ Object.entries(modules).forEach(([path, module]: any) => {
         component: module.default,
     };
 
-    slides.update((slides) => [...slides, slide]);
+    slides.update((slides) => {
+        slideStateStore.update(s => {
+            s.max  = slides.length - 1
+            return s
+        })
+
+        return [...slides, slide]
+    });
+    
 });
 
-export { slides, index, viewerNav };
+export interface SlideInfo {
+    path: string;
+    title: string;
+    component: any;
+}
+
+export { slides, slideStateStore, viewerNav };

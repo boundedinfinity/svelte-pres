@@ -1,13 +1,13 @@
 <script lang="ts">
     import Nav from "$lib/nav.svelte";
     import { viewerNav } from "$lib/slides";
-    export let debug: boolean = true;
+    export let debug: boolean = false;
 </script>
 
 <div class="overlay">
     {#if $viewerNav}
         <div class="nav" class:nav-debug={debug}>
-            <Nav {debug} scale={4} opacity={10} />
+            <Nav />
         </div>
     {/if}
 </div>
