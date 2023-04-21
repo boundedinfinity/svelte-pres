@@ -13,10 +13,10 @@
 <style>
     main {
         display: grid;
-        height: var(--h);
-        width: var(--w);
         justify-content: center;
         align-content: center;
+        height: var(--h);
+        width: var(--w);
     }
 
     .debug1 {
