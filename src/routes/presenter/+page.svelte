@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Nav from "$lib/nav.svelte";
+    import Nav from "./nav.svelte";
     import NavControl from "./navControl.svelte";
     import { slides, slideStateStore } from "$lib/slides";
     $: slide = $slides[$slideStateStore.index];
@@ -46,22 +46,15 @@
 </div>
 
 <style>
-    li {
-        margin-block: 0.25rem;
-    }
-
-    .list {
-        grid-area: l;
-    }
-
     .viewer {
         grid-area: v;
     }
-
     .info {
         grid-area: i;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        align-items: center;
     }
 
     .current {
@@ -75,13 +68,28 @@
     .grid {
         display: grid;
         grid-template-areas:
-            "l l l v v v v v v v v"
-            "l l l v v v v v v v v"
-            "l l l v v v v v v v v"
-            "l l l i i i i i i i i";
+            "l l v v v v v v v v"
+            "l l v v v v v v v v"
+            "l l v v v v v v v v"
+            "l l i i i i i i i i"
+            "l l i i i i i i i i";
         height: var(--h);
         width: var(--w);
-        grid-template-rows: repeat(4, 1fr);
-        grid-template-columns: repeat(11, 1fr);
+        gap: 1rem;
+        grid-template-rows: repeat(5, 1fr);
+        grid-template-columns: repeat(10, 1fr);
+    }
+
+    li {
+        margin-block: 0.25rem;
+    }
+
+    button {
+        padding-block: 0.25rem;
+        padding-inline: 0.5rem;
+    }
+
+    .list {
+        grid-area: l;
     }
 </style>

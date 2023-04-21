@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { navStateStore } from "$lib/nav-utils";
+    import { navPreferences, clearStorage } from "$lib/nav-utils";
 </script>
 
 <main>
     <div>Debug:</div>
     <div>
-        <input type="checkbox" bind:checked={$navStateStore.debug} />
+        <input type="checkbox" bind:checked={$navPreferences.debug} />
     </div>
     <div>Visible:</div>
     <div>
-        <input type="checkbox" bind:checked={$navStateStore.visible} />
+        <input type="checkbox" bind:checked={$navPreferences.visible} />
     </div>
     <div>Scale:</div>
     <div>
         <input
             type="number"
-            bind:value={$navStateStore.scale}
+            bind:value={$navPreferences.scale}
             min="1"
             max="10"
         />
@@ -24,10 +24,14 @@
     <div>
         <input
             type="number"
-            bind:value={$navStateStore.opacity}
+            bind:value={$navPreferences.opacity}
             min="0"
             max="100"
         />
+    </div>
+    <div>Clear Storage:</div>
+    <div>
+        <button on:click={clearStorage}>Clear</button>
     </div>
 </main>
 
@@ -35,5 +39,6 @@
     main {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.25rem;
     }
 </style>

@@ -4,12 +4,9 @@
 // https://svelte.dev/docs#template-syntax-svelte-component
 
 import p from "path-browserify";
-import { browser } from "$app/environment";
-import { writable, get } from "svelte/store";
-import { sender, receiver } from "$lib/socket-utils";
-import { saver, loader } from "$lib/local-storage-utils";
-
-const debug = false;
+import { writable } from "svelte/store";
+import { configure as sockerConfigure } from "$lib/socket-utils";
+import { configure as storageConfigure } from "$lib/local-storage-utils";
 
 const modules = import.meta.glob("../routes/slides/**/*.svelte", {
     eager: true,
@@ -17,15 +14,21 @@ const modules = import.meta.glob("../routes/slides/**/*.svelte", {
 // const modules = import.meta.glob("../routes/**/+page.svelte", { eager: true });
 // const modules = import.meta.glob("./*.svelte", { eager: true });
 
+class DeckState {
+    count: number
 
+    constructor(count: number) {
+        this.count = count
+    }
+}
 
-export class SlideState {
+export class DeckLocationState {
     index: number;
-    max: number;
+    size: number;
 
     constructor() {
         this.index = 0
-        this.max = 0
+        this.size = 0
     }
 
     next() {
@@ -44,19 +47,13 @@ export class SlideState {
     }
 
     private normalize() {
-        if(this.index > this.max) this.index = this.max
+        if(this.index >= this.size) this.index = this.size - 1
         if(this.index < 0) this.index = 0
     }
 }
 
 const slides = writable<SlideInfo[]>([]);
-const viewerNav = writable<boolean>(true);
-const slideStateStore = writable<SlideState>(new SlideState())
-
-sender<SlideState>(slideStateStore, { debug: false });
-receiver<SlideState>(slideStateStore, { debug: false });
-saver<SlideState>(slideStateStore, { debug: false });
-loader<SlideState>(slideStateStore, { debug: true });
+const slideStateStore = writable<DeckLocationState>(new DeckLocationState())
 
 Object.entries(modules).forEach(([path, module]: any) => {
     const slide: SlideInfo = {
@@ -68,7 +65,7 @@ Object.entries(modules).forEach(([path, module]: any) => {
 
     slides.update((slides) => {
         slideStateStore.update(s => {
-            s.max  = slides.length - 1
+            s.size  = slides.length + 1
             return s
         })
 
@@ -83,4 +80,7 @@ export interface SlideInfo {
     component: any;
 }
 
-export { slides, slideStateStore, viewerNav };
+export { slides, slideStateStore };
+
+sockerConfigure<DeckLocationState>(slideStateStore, { debug: false });
+storageConfigure<DeckLocationState>(slideStateStore, { debug: true });

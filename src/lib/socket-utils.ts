@@ -66,4 +66,9 @@ function receiver<T extends Object>(store: Writable<T>, options?: Options) {
     });
 }
 
-export { sender, receiver };
+function configure<T extends Object>(store: Writable<T>, options?: Options) {
+    sender<T>(store, options)
+    receiver<T>(store, options)
+}
+
+export { configure, sender, receiver };

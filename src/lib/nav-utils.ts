@@ -1,8 +1,11 @@
 import { writable } from "svelte/store";
-import { sender, receiver } from "$lib/socket-utils";
-import { saver, loader } from "$lib/local-storage-utils";
+import { configure as sockerConfigure } from "$lib/socket-utils";
+import {
+    configure as storageConfigure,
+    clear as storageClear,
+} from "$lib/local-storage-utils";
 
-class NavState {
+class NavPreferences {
     visible: boolean;
     scale: number;
     opacity: number;
@@ -12,15 +15,17 @@ class NavState {
         this.visible = true;
         this.scale = 2;
         this.opacity = 30;
-        this.debug = true;
+        this.debug = false;
     }
 }
 
-const navStateStore = writable<NavState>(new NavState());
+const navPreferences = writable<NavPreferences>(new NavPreferences());
 
-sender<NavState>(navStateStore, { debug: false });
-receiver<NavState>(navStateStore, { debug: false });
-saver<NavState>(navStateStore, { debug: false });
-loader<NavState>(navStateStore, { debug: true });
+function clearStorage() {
+    storageClear<NavPreferences>(new NavPreferences(), { debug: true });
+}
 
-export { type NavState, navStateStore };
+export { type NavPreferences, navPreferences, clearStorage };
+
+sockerConfigure<NavPreferences>(navPreferences, { debug: false });
+storageConfigure<NavPreferences>(navPreferences, { debug: true });

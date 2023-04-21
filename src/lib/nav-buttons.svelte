@@ -6,20 +6,20 @@
     import arrowLeft from "svelte-awesome/icons/arrowLeft";
     import arrowRight from "svelte-awesome/icons/arrowRight";
     import { slideStateStore } from "$lib/slides";
-    import { navStateStore } from "$lib/nav-utils";
+    import { navPreferences } from "$lib/nav-utils";
 
     function next() {
-        slideStateStore.update(s => {
-            s.next()
+        slideStateStore.update((s) => {
+            s.next();
             return s;
         });
     }
 
     function prev() {
-        slideStateStore.update(s => {
-            s.prev()
-            return s
-        })
+        slideStateStore.update((s) => {
+            s.prev();
+            return s;
+        });
     }
 
     function keydown(e: KeyboardEvent) {
@@ -38,15 +38,14 @@
 
 <div
     class="nav"
-    style="--opacity: {$navStateStore.opacity}%;"
-    class:nav-debug={$navStateStore.debug}
-    class:hidden={!$navStateStore.visible}
+    style="--opacity: {$navPreferences.opacity}%;"
+    class:nav-debug={$navPreferences.debug}
 >
     <div on:click={prev} on:keypress={prev} class="button">
-        <Icon data={arrowLeft} scale={$navStateStore.scale} />
+        <Icon data={arrowLeft} scale={$navPreferences.scale} />
     </div>
     <div on:click={next} on:keypress={next} class="button">
-        <Icon data={arrowRight} scale={$navStateStore.scale} />
+        <Icon data={arrowRight} scale={$navPreferences.scale} />
     </div>
 </div>
 
@@ -54,10 +53,6 @@
     .nav {
         display: flex;
         gap: 1rem;
-    }
-
-    .hidden {
-        opacity: 0;
     }
 
     .button {
