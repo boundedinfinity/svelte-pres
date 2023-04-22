@@ -1,9 +1,9 @@
 <script lang="ts">
     import Nav from "./nav.svelte";
     import NavControl from "./navControl.svelte";
-    import { slides, slideStateStore } from "$lib/slides";
-    $: slide = $slides[$slideStateStore.index];
-    $: title = `[${$slideStateStore.index + 1} of ${$slides.length}] ${
+    import { slides, deckLocation } from "$lib/slides";
+    $: slide = $slides[$deckLocation.index];
+    $: title = `[${$deckLocation.index + 1} of ${$slides.length}] ${
         slide.title
     }`;
     export let h: number = 97;
@@ -21,9 +21,9 @@
             {#each $slides as slide, i}
                 <li>
                     <button
-                        class:current={i == $slideStateStore.index}
+                        class:current={i == $deckLocation.index}
                         on:click={() =>
-                            slideStateStore.update((s) => {
+                            deckLocation.update((s) => {
                                 s.goto(i);
                                 return s;
                             })}
@@ -55,6 +55,8 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
         align-items: center;
+        border-top-width: 1px;
+        border-top-style: solid;
     }
 
     .current {
@@ -71,12 +73,17 @@
             "l l v v v v v v v v"
             "l l v v v v v v v v"
             "l l v v v v v v v v"
+            "l l v v v v v v v v"
+            "l l v v v v v v v v"
+            "l l v v v v v v v v"
+            "l l v v v v v v v v"
+            "l l v v v v v v v v"
             "l l i i i i i i i i"
             "l l i i i i i i i i";
         height: var(--h);
         width: var(--w);
         gap: 1rem;
-        grid-template-rows: repeat(5, 1fr);
+        grid-template-rows: repeat(10, 1fr);
         grid-template-columns: repeat(10, 1fr);
     }
 
@@ -91,5 +98,7 @@
 
     .list {
         grid-area: l;
+        border-right-width: 1px;
+        border-right-style: solid;
     }
 </style>

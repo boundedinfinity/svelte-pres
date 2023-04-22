@@ -1,14 +1,14 @@
 <script lang="ts">
     import Nav from "./nav.svelte";
-    import { slides, slideStateStore } from "$lib/slides";
+    import { slides, deckLocation } from "$lib/slides";
     import { fade } from "svelte/transition";
 
     export let debug: boolean = false;
     export let h = "95svh";
     export let w = "95svw";
 
-    $: slide = $slides[$slideStateStore.index];
-    $: title = `[${$slideStateStore.index + 1} of ${$slides.length}] ${
+    $: slide = $slides[$deckLocation.index];
+    $: title = `[${$deckLocation.index + 1} of ${$slides.length}] ${
         slide.title
     }`;
 </script>
@@ -18,7 +18,7 @@
 </svelte:head>
 
 <main style="--h: {h}; --w: {w};" transition:fade>
-    {#key $slideStateStore.index}
+    {#key $deckLocation.index}
         <div class="content" class:debug-content={debug} transition:fade>
             <svelte:component this={slide.component} />
         </div>

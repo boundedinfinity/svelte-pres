@@ -1,10 +1,9 @@
 <script lang="ts">
     import { pattern2lines, lines2gridArea, lines2elems } from "./box-utils";
     import BoxItem from "$lib/boxItem.svelte";
-    import { children } from "svelte/internal";
 
     export let pattern: string;
-    export let outline: boolean = true;
+    export let outline: boolean = false;
     export let itemOutline: boolean = true;
     export let gap: string = "0.5rem";
     export let blank = "_";
@@ -39,11 +38,14 @@
     main {
         display: grid;
         grid-template-areas: var(--area);
-        grid-template-columns: repeat(--cols, 1fr);
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+        /* grid-template-columns: repeat(--cols, 1fr); */
         grid-template-rows: repeat(--rows, 1fr);
         width: 100%;
         height: 100%;
         gap: var(--gap, 0.5rem);
+        box-sizing: border-box;
     }
 
     .outline {

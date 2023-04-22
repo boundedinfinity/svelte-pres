@@ -2,7 +2,6 @@ interface Options {
     name?: string;
     space?: number;
 }
-
 export function dumps(obj: any, options?: Options): string {
     let str: string = "";
 
@@ -32,3 +31,5 @@ const replacerFunc = () => {
         return value;
     };
 };
+
+export {};

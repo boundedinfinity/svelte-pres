@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     export const meta = {
-        title: "This is slide 1",
+        title: "box 2",
     };
 </script>
 

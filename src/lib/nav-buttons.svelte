@@ -5,18 +5,18 @@
     import Icon from "svelte-awesome";
     import arrowLeft from "svelte-awesome/icons/arrowLeft";
     import arrowRight from "svelte-awesome/icons/arrowRight";
-    import { slideStateStore } from "$lib/slides";
+    import { deckLocation } from "$lib/slides";
     import { navPreferences } from "$lib/nav-utils";
 
     function next() {
-        slideStateStore.update((s) => {
+        deckLocation.update((s) => {
             s.next();
             return s;
         });
     }
 
     function prev() {
-        slideStateStore.update((s) => {
+        deckLocation.update((s) => {
             s.prev();
             return s;
         });

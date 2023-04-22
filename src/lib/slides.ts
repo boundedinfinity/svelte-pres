@@ -22,7 +22,7 @@ class DeckState {
     }
 }
 
-export class DeckLocationState {
+export class DeckLocation {
     index: number;
     size: number;
 
@@ -53,9 +53,9 @@ export class DeckLocationState {
 }
 
 const slides = writable<SlideInfo[]>([]);
-const slideStateStore = writable<DeckLocationState>(new DeckLocationState())
+const deckLocation = writable<DeckLocation>(new DeckLocation())
 
-Object.entries(modules).forEach(([path, module]: any) => {
+const _slides = Object.entries(modules).map(([path, module]: any) => {
     const slide: SlideInfo = {
         path: path,
         title:
@@ -63,16 +63,12 @@ Object.entries(modules).forEach(([path, module]: any) => {
         component: module.default,
     };
 
-    slides.update((slides) => {
-        slideStateStore.update(s => {
-            s.size  = slides.length + 1
-            return s
-        })
 
-        return [...slides, slide]
-    });
+    return slide
     
 });
+
+
 
 export interface SlideInfo {
     path: string;
@@ -80,7 +76,14 @@ export interface SlideInfo {
     component: any;
 }
 
-export { slides, slideStateStore };
+export { slides, deckLocation };
 
-sockerConfigure<DeckLocationState>(slideStateStore, { debug: false });
-storageConfigure<DeckLocationState>(slideStateStore, { debug: true });
+sockerConfigure<DeckLocation>(deckLocation, { debug: false });
+storageConfigure<DeckLocation>(deckLocation, { debug: true });
+
+slides.set(_slides)
+
+deckLocation.update(location => {
+    location.size  = _slides.length
+    return location
+})

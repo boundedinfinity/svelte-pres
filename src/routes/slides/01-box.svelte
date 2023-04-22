@@ -1,11 +1,13 @@
 <script lang="ts" context="module">
     export const meta = {
-        title: "This is slide 1",
+        title: "box 1",
+        notes: `
+            This is a test.
+        `
     };
 </script>
 
 <script lang="ts">
-    import Center from "$lib/center.svelte";
     import Box from "$lib/box.svelte";
 </script>
 
