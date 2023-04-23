@@ -1,12 +1,16 @@
 import { io } from "socket.io-client";
 import { type Writable, get } from "svelte/store";
+import { dumper } from '$lib/util'
 
 const socket = io();
+const PREFIX = 'socket-utils'
 
-interface Options {
+interface Options<T> {
     prefix?: boolean;
     debug?: boolean;
     space?: number;
+    sendFilter?: (obj: T) => boolean
+    receiveFilter?: (obj: T) => boolean
 }
 
 let currentTime: number = 0;
@@ -23,10 +27,16 @@ class Wrapper<T extends Object> {
     }
 }
 
-function sender<T extends Object>(store: Writable<T>, options?: Options) {
+function sender<T extends Object>(store: Writable<T>, options?: Options<T>) {
+    if (!store) {
+        dumper.warn("invalid store", { prefix: PREFIX, name: "sender" })
+    }
+
     store.subscribe((obj: T) => {
-        if (!obj && options?.debug)
-            console.warn("socket-utils.send: no object");
+        if (!obj?.constructor?.name) {
+            dumper.debug("no object", { prefix: PREFIX, name: "sender" })
+            return
+        }
 
         const wrapper = new Wrapper<T>(obj, Date.now());
         const raw = JSON.stringify(wrapper, null, options?.space);
@@ -35,14 +45,16 @@ function sender<T extends Object>(store: Writable<T>, options?: Options) {
             return;
         }
 
-        if (options?.debug)
-            console.info(`socket-utils.send[${wrapper.event}]: ${raw}`);
+        if (options?.sendFilter && !options.sendFilter(obj)) {
+            return
+        }
 
+        dumper.debug(raw, { prefix: PREFIX, name: `socket-utils.send[${wrapper.event}]` })
         socket.emit(wrapper.event, raw);
     });
 }
 
-function receiver<T extends Object>(store: Writable<T>, options?: Options) {
+function receiver<T extends Object>(store: Writable<T>, options?: Options<T>) {
     const obj = get<T>(store);
     const wrapper = new Wrapper<T>(obj, 0);
     const event = obj.constructor.name;
@@ -50,6 +62,7 @@ function receiver<T extends Object>(store: Writable<T>, options?: Options) {
     socket.on(event, (raw: string) => {
         if (options?.debug) console.debug(`socket-utils.receive: ${raw}`);
         if (event === "Object") return;
+        if (!raw) return
 
         const json = JSON.parse(raw);
         Object.assign(wrapper, json);
@@ -59,6 +72,10 @@ function receiver<T extends Object>(store: Writable<T>, options?: Options) {
         if (wrapper.time < currentTime) return;
         if (rawCurrent === rawObj) return;
 
+        if (options?.receiveFilter && !options.receiveFilter(obj)) {
+            return
+        }
+
         if (options?.debug)
             console.log(`socket-utils.receive[${event}]: ${rawObj}`);
 
@@ -66,7 +83,7 @@ function receiver<T extends Object>(store: Writable<T>, options?: Options) {
     });
 }
 
-function configure<T extends Object>(store: Writable<T>, options?: Options) {
+function configure<T extends Object>(store: Writable<T>, options?: Options<T>) {
     sender<T>(store, options)
     receiver<T>(store, options)
 }

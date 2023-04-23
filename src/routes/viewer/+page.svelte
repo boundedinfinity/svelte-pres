@@ -1,6 +1,6 @@
 <script lang="ts">
     import Nav from "./nav.svelte";
-    import { currentModule } from "$lib/module-util";
+    import { deckComponent, currentDeck } from "$lib/deck-utils";
     import { fade } from "svelte/transition";
 
     export let debug: boolean = false;
@@ -9,13 +9,13 @@
 </script>
 
 <svelte:head>
-    <title>{$currentModule.title} : Viewer</title>
+    <title>{$currentDeck.title} : Viewer</title>
 </svelte:head>
 
 <main style="--h: {h}; --w: {w};" transition:fade>
-    {#key $currentModule.title}
+    {#key $currentDeck.title}
         <div class="content" class:debug-content={debug} transition:fade>
-            <svelte:component this={$currentModule.component} />
+            <svelte:component this={$deckComponent} />
         </div>
     {/key}
 

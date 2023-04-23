@@ -1,9 +1,17 @@
+import _ from 'lodash'
+
 interface Options {
+    prefix?: string
     name?: string;
     space?: number;
 }
+
 export function dumps(obj: any, options?: Options): string {
     let str: string = "";
+
+    if (options?.prefix) {
+        str = `${options.prefix}.`;
+    }
 
     if (options?.name) {
         str = `${options.name} `;
@@ -33,22 +41,29 @@ const replacerFunc = () => {
 };
 
 class Dumper {
-    constructor() { }
+    options?: Options
+    constructor(options?: Options) { this.options = options }
+
+    private combine(options?: Options): Options {
+        return Object.assign({}, ..._.compact([this.options, options]))
+    }
+
     info(obj: any, options?: Options) {
-        console.info(dumps(obj, options))
+        console.info(dumps(obj, this.combine(options)))
     }
 
     warn(obj: any, options?: Options) {
-        console.warn(dumps(obj, options))
+        console.warn(dumps(obj, this.combine(options)))
     }
 
     debug(obj: any, options?: Options) {
-        console.debug(dumps(obj, options))
+        console.debug(dumps(obj, this.combine(options)))
     }
 }
 
 const dumper = new Dumper()
 
 export {
-    dumper
+    dumper,
+    Dumper
 };

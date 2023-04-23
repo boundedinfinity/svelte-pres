@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { configure as sockerConfigure } from "$lib/socket-utils";
+import { configure as socketConfigure } from "$lib/socket-utils";
 import {
     configure as storageConfigure,
     clear as storageClear,
@@ -27,5 +27,5 @@ function clearStorage() {
 
 export { type NavPreferences, navPreferences, clearStorage };
 
-sockerConfigure<NavPreferences>(navPreferences, { debug: false });
+socketConfigure<NavPreferences>(navPreferences, { debug: false });
 storageConfigure<NavPreferences>(navPreferences, { debug: true });

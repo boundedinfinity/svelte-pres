@@ -1,35 +1,40 @@
 <script lang="ts">
-    import {
-        allModules,
-        currentModule,
-        ModuleDescriptor,
-    } from "$lib/module-util";
-
+    import { allDecks, currentDeck, DeckDescriptor } from "$lib/deck-utils";
     import { goto } from "$app/navigation";
 
-    function setModule(module: ModuleDescriptor, path: string) {
-        $currentModule = module;
+    function setModule(deck: DeckDescriptor, path: string) {
+        $currentDeck = deck;
         goto(path)
     }
 </script>
 
 <ul>
-    {#each $allModules as module}
+    {#each $allDecks as deck}
         <li>
             <div>
-                <h3>{module.title}</h3>
+                <h3>{deck.title}</h3>
                 <ul>
-                    <li>Path: {module.path}</li>
+                    <li>Path: {deck.path}</li>
                     <li>
-                        <button on:click={() => setModule(module, "/viewer")}>
+                        <button on:click={() => setModule(deck, "/viewer")}>
                             Viewer</button
                         >
                     </li>
                     <li>
-                        <button on:click={() => setModule(module, "/presenter")}
+                        <button on:click={() => setModule(deck, "/presenter")}
                             >Presenter</button
                         >
                     </li>
+                    {#if deck.labels}
+                        <li>
+                            Labels:
+                            <ul>
+                                {#each deck.labels as label}
+                                    <li>{label}</li>
+                                {/each}
+                            </ul>
+                        </li>
+                    {/if}
                 </ul>
             </div>
         </li>
