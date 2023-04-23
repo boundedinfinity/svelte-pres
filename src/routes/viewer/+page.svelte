@@ -1,26 +1,21 @@
 <script lang="ts">
     import Nav from "./nav.svelte";
-    import { slides, deckLocation } from "$lib/slides";
+    import { currentModule } from "$lib/module-util";
     import { fade } from "svelte/transition";
 
     export let debug: boolean = false;
     export let h = "95svh";
     export let w = "95svw";
-
-    $: slide = $slides[$deckLocation.index];
-    $: title = `[${$deckLocation.index + 1} of ${$slides.length}] ${
-        slide.title
-    }`;
 </script>
 
 <svelte:head>
-    <title>{title}</title>
+    <title>{$currentModule.title} : Viewer</title>
 </svelte:head>
 
 <main style="--h: {h}; --w: {w};" transition:fade>
-    {#key $deckLocation.index}
+    {#key $currentModule.title}
         <div class="content" class:debug-content={debug} transition:fade>
-            <svelte:component this={slide.component} />
+            <svelte:component this={$currentModule.component} />
         </div>
     {/key}
 

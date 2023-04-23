@@ -7,12 +7,6 @@
     });
 </script>
 
-<p>Count: {$deck.slides.length}</p>
-
-<div>
-    <input type="number" bind:value={$deck.index} min="0" max="10" />
-</div>
-
 <main>
     <slot />
 </main>

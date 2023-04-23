@@ -32,4 +32,23 @@ const replacerFunc = () => {
     };
 };
 
-export {};
+class Dumper {
+    constructor() { }
+    info(obj: any, options?: Options) {
+        console.info(dumps(obj, options))
+    }
+
+    warn(obj: any, options?: Options) {
+        console.warn(dumps(obj, options))
+    }
+
+    debug(obj: any, options?: Options) {
+        console.debug(dumps(obj, options))
+    }
+}
+
+const dumper = new Dumper()
+
+export {
+    dumper
+};

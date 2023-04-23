@@ -1,34 +1,32 @@
 <script lang="ts">
     import Nav from "./nav.svelte";
     import NavControl from "./navControl.svelte";
-    import { slides, deckLocation } from "$lib/slides";
-    $: slide = $slides[$deckLocation.index];
-    $: title = `[${$deckLocation.index + 1} of ${$slides.length}] ${
-        slide.title
-    }`;
+    import { currentModule } from "$lib/module-util";
+    import { deck } from "$lib/deck-utils";
+
     export let h: number = 97;
     export let w: number = 97;
     export let debug: boolean = false;
 </script>
 
 <svelte:head>
-    <title>{title}</title>
+    {#if $currentModule}
+        <title>{$currentModule.title} : Presenter</title>
+    {/if}
 </svelte:head>
 
 <div class="grid" style="--h: {h}vh; --w: {w}vw;">
     <div class="list" class:debug>
+        <p>Count: {$deck.slides.length}</p>
+        
         <ul>
-            {#each $slides as slide, i}
+            {#each $deck.slides as slide, i}
                 <li>
                     <button
-                        class:current={i == $deckLocation.index}
-                        on:click={() =>
-                            deckLocation.update((s) => {
-                                s.goto(i);
-                                return s;
-                            })}
+                        class:current={i == $deck.index}
+                        on:click={() => deck.goto(i)}
                     >
-                        slide: {i} - {slide.title}
+                        [{i}] {slide.title}
                     </button>
                 </li>
             {/each}
@@ -36,7 +34,7 @@
     </div>
 
     <div class="viewer" class:debug>
-        <svelte:component this={slide.component} />
+        <svelte:component this={$currentModule.component} />
     </div>
 
     <div class="info" class:debug>

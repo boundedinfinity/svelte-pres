@@ -1,20 +1,21 @@
 <script lang="ts" context="module">
     export const meta = {
-        title: "box 1",
-        notes: `
-            This is a test.
-        `
+        title: "All in one",
+        labels: ['one', 'two']
     };
 </script>
 
 <script lang="ts">
+    import Deck from '$lib/deck.svelte'
+    import Slide from '$lib/slide.svelte'
     import Box from "$lib/box.svelte";
 </script>
 
-<!-- <Center> -->
-    <Box
+<Deck>
+    <Slide title="slide 1 title with a longer title and some more text" fade={false}>
+        <Box debug={false}
         pattern="
-        _ _ _ A[X,Y] A _ _
+        _ _ _ A[X,Y] A _ _ _
         _ _ _ A A _ B 
         _
         _ _ _ _ _ C
@@ -33,4 +34,30 @@
             text: User information
     "
     />
-<!-- </Center> -->
+    </Slide>
+    <Slide title="slide 2 title" fade={false}>
+        <Box  debug={false}
+        pattern="
+        _ _ _ A[X,Y] A _ _ _
+        _ _ _ A A _ B 
+        _
+        _ _ _ _ _ C
+        _
+        _ _ _ _ _ D
+        ===
+        A:
+            text: |
+                TLS X.509 Certificate<br />
+                with another line
+        B:
+            text: SSL Private Key
+        X:
+            text: SSL Public Key
+        Y:
+            text: User information
+    "
+    />
+    </Slide>
+    <Slide title="slide 3 title">slide 3 contents</Slide>
+    <Slide title="slide 4 title">slide 4 contents</Slide>
+</Deck>

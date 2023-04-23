@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { dumpl } from "$lib/util";
+import { dumper } from "$lib/util";
 import _ from "lodash";
 
 class SlideDescriptor {
@@ -17,18 +17,43 @@ class DeckDescriptor {
     index: number = -1;
     debug: boolean = true;
 
-    constructor() {}
+    constructor() { }
 
     add(slide: SlideDescriptor): DeckDescriptor {
-        dumpl(this.slides);
         this.slides = _.uniqBy([...this.slides, slide], (s) => s.index)
-        dumpl(this.slides);
+        dumper.debug(this.slides);
         this.index = 0;
         return this;
     }
+
+    next(): DeckDescriptor {
+        dumper.debug(`prev: ${this.index} --> ${this.index + 1}`)
+        this.index++
+        this.normalize()
+        return this
+    }
+
+    prev(): DeckDescriptor {
+        dumper.debug(`prev: ${this.index} --> ${this.index - 1}`)
+        this.index--
+        this.normalize()
+        return this
+    }
+
+    goto(index: number): DeckDescriptor {
+        dumper.debug(`goto: ${this.index} --> ${index}`)
+        this.index = index
+        this.normalize()
+        return this
+    }
+
+    private normalize() {
+        if (this.index > this.slides.length - 1) this.index = this.slides.length - 1
+        if (this.index < 0) this.index = 0
+    }
 }
 
-function createDesk() {
+function createDeck() {
     const { subscribe, set, update } = writable<DeckDescriptor>(
         new DeckDescriptor()
     );
@@ -37,9 +62,12 @@ function createDesk() {
         subscribe,
         set,
         add: (slide: SlideDescriptor) => update((d) => d.add(slide)),
+        goto: (index: number) => update(d => d.goto(index)),
+        next: () => update(d => d.next()),
+        prev: () => update(d => d.prev()),
     };
 }
 
-const deck = createDesk();
+const deck = createDeck();
 
 export { deck, SlideDescriptor };
