@@ -18,8 +18,7 @@ class ModuleDescriptor {
     meta?: ModuleMetaData
 
     constructor(path: string, component: any, meta?: ModuleMetaData) {
-        this.path = path
-        // this.title = meta?.title || p.basename(path).replace(p.extname(path), "")
+        this.path = path       
         this.component = component
         this.meta = meta
     }
@@ -30,8 +29,7 @@ const records = import.meta.glob("../routes/slides/**/*.svelte", {
 });
 
 const _allDescriptors = Object.entries(records).map(([path, module]: any) => {
-    const meta = Object.assign(new ModuleMetaData(), module.meta)
-    return new ModuleDescriptor(path, module.default, meta)
+    return new ModuleDescriptor(path, module.default, module.meta)
 });
 
 const allModules = readable<ModuleDescriptor[]>(_allDescriptors);

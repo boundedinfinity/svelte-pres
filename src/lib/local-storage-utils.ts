@@ -1,13 +1,15 @@
 import { browser } from "$app/environment";
 import { type Writable, get } from "svelte/store";
 
-interface Options {
+interface Options<T> {
     prefix?: boolean;
     debug?: boolean;
     space?: number;
+    saveFilter?: (obj:T) => boolean
+    loadFilter?: (obj:T) => boolean
 }
 
-function saver<T extends Object>(store: Writable<T>, options?: Options) {
+function saver<T extends Object>(store: Writable<T>, options?: Options<T>) {
     if (!store) return;
 
     store.subscribe((obj: T) => {
@@ -19,6 +21,8 @@ function saver<T extends Object>(store: Writable<T>, options?: Options) {
             console.warn(`local-storage-utils.save: no object`);
             return;
         }
+
+        if(options?.saveFilter && options.saveFilter(obj)) return
 
         const key = obj.constructor.name;
         const raw = JSON.stringify(obj, null, options?.space);
@@ -35,7 +39,7 @@ function saver<T extends Object>(store: Writable<T>, options?: Options) {
     });
 }
 
-function loader<T extends Object>(store: Writable<T>, options?: Options) {
+function loader<T extends Object>(store: Writable<T>, options?: Options<T>) {
     if (!store) {
         if (options?.debug) console.warn(`local-storage-utils.load: no store`);
         return;
@@ -58,10 +62,13 @@ function loader<T extends Object>(store: Writable<T>, options?: Options) {
 
     const loaded = JSON.parse(raw!);
     Object.assign(obj, loaded);
+
+    if(options?.loadFilter && options.loadFilter(obj)) return
+
     store.set(obj);
 }
 
-function clear<T extends Object>(obj: T, options?: Options) {
+function clear<T extends Object>(obj: T, options?: Options<T>) {
     if (!(browser && window && window.localStorage)) {
         if (options?.debug)
             console.warn(`local-storage-utils.clear: not in browser`);
@@ -76,7 +83,7 @@ function clear<T extends Object>(obj: T, options?: Options) {
     window.localStorage.removeItem(key);
 }
 
-function reset<T extends Object>(obj: T, options?: Options) {
+function reset<T extends Object>(obj: T, options?: Options<T>) {
     if (!(browser && window && window.localStorage)) {
         if (options?.debug)
             console.warn(`local-storage-utils.clear: not in browser`);
@@ -97,7 +104,7 @@ function reset<T extends Object>(obj: T, options?: Options) {
     window.localStorage.setItem(key, raw);
 }
 
-function configure<T extends Object>(store: Writable<T>, options?: Options) {
+function configure<T extends Object>(store: Writable<T>, options?: Options<T>) {
     loader<T>(store, options);
     saver<T>(store, options);
 }

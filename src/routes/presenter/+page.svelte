@@ -1,7 +1,7 @@
 <script lang="ts">
     import Nav from "./nav.svelte";
     import NavControl from "./navControl.svelte";
-    import { deck, deckComponent, currentDeck } from "$lib/deck-utils";
+    import { currentDeck, currentComponent, slides } from "$lib/deck-utils";
 
     export let h: number = 97;
     export let w: number = 97;
@@ -9,21 +9,21 @@
 </script>
 
 <svelte:head>
-    {#if $deckComponent}
+    {#if $currentDeck}
         <title>{$currentDeck.title} : Presenter</title>
     {/if}
 </svelte:head>
 
 <div class="grid" style="--h: {h}vh; --w: {w}vw;">
     <div class="list" class:debug>
-        <p>Count: {$deck.slides.length}</p>
+        <p>Count: {$slides.length}</p>
 
         <ul>
-            {#each $deck.slides as slide, i}
+            {#each $slides as slide, i}
                 <li>
                     <button
-                        class:current={i == $deck.index}
-                        on:click={() => deck.goto(i)}
+                        class:current={i == $currentDeck.index}
+                        on:click={() => ($currentDeck.index = i)}
                     >
                         [{i}] {slide.title}
                     </button>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="viewer" class:debug>
-        <svelte:component this={$deckComponent} />
+        <svelte:component this={$currentComponent} />
     </div>
 
     <div class="info" class:debug>

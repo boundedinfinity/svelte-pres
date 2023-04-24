@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 interface Options {
     prefix?: string
+    method?: string
     name?: string;
     space?: number;
 }
@@ -11,6 +12,10 @@ export function dumps(obj: any, options?: Options): string {
 
     if (options?.prefix) {
         str = `${options.prefix}.`;
+    }
+
+    if(options?.method) {
+        str = `${options.method}.`;
     }
 
     if (options?.name) {
@@ -58,6 +63,10 @@ class Dumper {
 
     debug(obj: any, options?: Options) {
         console.debug(dumps(obj, this.combine(options)))
+    }
+
+    error(obj: any, options?: Options) {
+        console.error(dumps(obj, this.combine(options)))
     }
 }
 

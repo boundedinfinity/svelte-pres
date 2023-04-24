@@ -1,9 +1,9 @@
 import { io } from "socket.io-client";
 import { type Writable, get } from "svelte/store";
-import { dumper } from '$lib/util'
+import { Dumper } from '$lib/util'
 
 const socket = io();
-const PREFIX = 'socket-utils'
+const dumper = new Dumper({ prefix: 'socket-utils' })
 
 interface Options<T> {
     prefix?: boolean;
@@ -27,14 +27,18 @@ class Wrapper<T extends Object> {
     }
 }
 
+
 function sender<T extends Object>(store: Writable<T>, options?: Options<T>) {
+    const method = "sender<T>"
+    
     if (!store) {
-        dumper.warn("invalid store", { prefix: PREFIX, name: "sender" })
+        dumper.error("cannot initialize without a valid store", { method })
+        throw new Error("cannot initialize without a valid store")
     }
 
     store.subscribe((obj: T) => {
         if (!obj?.constructor?.name) {
-            dumper.debug("no object", { prefix: PREFIX, name: "sender" })
+            dumper.debug("no object", { method })
             return
         }
 
@@ -45,17 +49,37 @@ function sender<T extends Object>(store: Writable<T>, options?: Options<T>) {
             return;
         }
 
-        if (options?.sendFilter && !options.sendFilter(obj)) {
+        if (options?.sendFilter && options.sendFilter(obj)) {
             return
         }
 
-        dumper.debug(raw, { prefix: PREFIX, name: `socket-utils.send[${wrapper.event}]` })
+        dumper.debug(raw, { method, name: `[${wrapper.event}]` })
         socket.emit(wrapper.event, raw);
     });
 }
 
+class Factory {
+    create<T>(type: (new () => T)): T {
+        return new type()
+    }
+}
+
+
 function receiver<T extends Object>(store: Writable<T>, options?: Options<T>) {
+    const method = "receiver<T>"
+
+    if (!store) {
+        dumper.error("cannot initialize without a valid store", { method })
+        throw new Error("cannot initialize without a valid store")
+    }
+
     const obj = get<T>(store);
+
+    if (!obj) {
+        dumper.error("cannot initialize without a valid instance of T", { method })
+        throw new Error("cannot initialize without a valid instance of T")
+    }
+
     const wrapper = new Wrapper<T>(obj, 0);
     const event = obj.constructor.name;
 
@@ -72,7 +96,7 @@ function receiver<T extends Object>(store: Writable<T>, options?: Options<T>) {
         if (wrapper.time < currentTime) return;
         if (rawCurrent === rawObj) return;
 
-        if (options?.receiveFilter && !options.receiveFilter(obj)) {
+        if (options?.receiveFilter && options.receiveFilter(obj)) {
             return
         }
 

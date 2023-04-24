@@ -6,15 +6,15 @@
     import arrowLeft from "svelte-awesome/icons/arrowLeft";
     import arrowRight from "svelte-awesome/icons/arrowRight";
     import { navPreferences } from "$lib/nav-utils";
-    import { deck } from "$lib/deck-utils";
+    import { next, prev } from "$lib/deck-utils";
 
     function keydown(e: KeyboardEvent) {
         switch (e.key) {
             case "ArrowLeft":
-                deck.prev();
+                prev();
                 break;
             case "ArrowRight":
-                deck.next();
+                next();
                 break;
         }
     }
@@ -27,10 +27,10 @@
     style="--opacity: {$navPreferences.opacity}%;"
     class:nav-debug={$navPreferences.debug}
 >
-    <div on:click={deck.prev} on:keypress={deck.prev} class="button">
+    <div on:click={prev} on:keypress={prev} class="button">
         <Icon data={arrowLeft} scale={$navPreferences.scale} />
     </div>
-    <div on:click={deck.next} on:keypress={deck.next} class="button">
+    <div on:click={next} on:keypress={next} class="button">
         <Icon data={arrowRight} scale={$navPreferences.scale} />
     </div>
 </div>

@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { deck, SlideDescriptor } from "$lib/deck-utils";
+    import { currentDeck, slides, SlideDescriptor } from "$lib/deck-utils";
     import { fade as sfade } from "svelte/transition";
     export let title: string;
     export let fade: boolean = true;
-    const slide = new SlideDescriptor(title, $deck.slides.length);
-    deck.add(slide);
+    const slide = new SlideDescriptor(title, $slides.length);
+    slides.update((_) => [..._, slide]);
 </script>
 
-{#key $deck.index}
+{#key slide.index}
     {#if fade}
         <div
-            class:show={$deck.index == slide.index}
+            class:show={$currentDeck.index == slide.index}
             in:sfade={{ delay: 50 }}
             out:sfade={{ duration: 50 }}
         >
@@ -18,7 +18,7 @@
             slide <slot />
         </div>
     {:else}
-        <div class:show={$deck.index == slide.index}>
+        <div class:show={$currentDeck.index == slide.index}>
             <h1>{title}</h1>
             slide <slot />
         </div>

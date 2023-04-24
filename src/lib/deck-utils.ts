@@ -1,40 +1,26 @@
-import { writable, derived } from "svelte/store";
-import { dumper } from "$lib/util";
+import { writable, derived, get } from "svelte/store";
+import { Dumper } from "$lib/util";
 import _ from "lodash";
-import p from "path-browserify";
+import pathb from "path-browserify";
 import { allModules } from '$lib/module-utils'
 import { configure as socketConfigure } from "$lib/socket-utils";
 import { configure as storageConfigure, } from "$lib/local-storage-utils";
 
+const dumper = new Dumper({ prefix: 'deck-utils' })
 
 class DeckDescriptor {
     path: string;
     title: string;
     labels?: string[]
+    index: number;
 
-    constructor(path?: string, title?: string, labels?: string[]) {
+    constructor(path?: string, title?: string, labels?: string[], index?: number) {
         this.path = path || '/'
-        this.title = title || p.basename(this.path).replace(p.extname(this.path), "")
+        this.title = title || pathb.basename(this.path).replace(pathb.extname(this.path), "")
         this.labels = labels
+        this.index = index || 0
     }
 }
-
-const allDecks = derived<typeof allModules, DeckDescriptor[]>(
-    allModules, ($allModules): DeckDescriptor[] =>
-    $allModules.map(module => new DeckDescriptor(module.path, module.meta?.title, module.meta?.labels))
-)
-
-const currentDeck = writable<DeckDescriptor>(new DeckDescriptor())
-
-socketConfigure<DeckDescriptor>(currentDeck, { debug: false, sendFilter: obj => obj.path === '/'});
-storageConfigure<DeckDescriptor>(currentDeck, { debug: true });
-
-const deckComponent = derived<[typeof allModules, typeof currentDeck], any>(
-    [allModules, currentDeck],
-    ([$allModules, $currentDeck]) => {
-        return $allModules.find(module => $currentDeck.path == module.path)?.component
-    }
-)
 
 class SlideDescriptor {
     title: string;
@@ -46,62 +32,41 @@ class SlideDescriptor {
     }
 }
 
-class DeckController {
-    slides: SlideDescriptor[] = [];
-    index: number = -1;
-    debug: boolean = true;
+const currentDeck = writable<DeckDescriptor>(new DeckDescriptor())
+socketConfigure<DeckDescriptor>(currentDeck, { debug: false, sendFilter: obj => obj.path === '/' });
+storageConfigure<DeckDescriptor>(currentDeck, { debug: true, saveFilter: obj => obj.path === '/' });
 
-    constructor() { }
+const allDescriptors = derived<typeof allModules, DeckDescriptor[]>(
+    allModules, ($allModules): DeckDescriptor[] =>
+    $allModules.map(module => new DeckDescriptor(module.path, module.meta?.title, module.meta?.labels))
+)
 
-    add(slide: SlideDescriptor): DeckController {
-        this.slides = _.uniqBy([...this.slides, slide], (s) => s.index)
-        dumper.debug(this.slides);
-        this.index = 0;
-        return this;
+const currentComponent = derived<[typeof allModules, typeof currentDeck], any | undefined>(
+    [allModules, currentDeck],
+    ([$allModules, $currentDeck]) => {
+        const found = $allModules.find(module => $currentDeck.path == module.path)
+        dumper.debug(found, { name: 'currentComponent' })
+        return found?.component
     }
+)
 
-    next(): DeckController {
-        dumper.debug(`prev: ${this.index} --> ${this.index + 1}`)
-        this.index++
-        this.normalize()
-        return this
-    }
+const slides = writable<SlideDescriptor[]>([])
 
-    prev(): DeckController {
-        dumper.debug(`prev: ${this.index} --> ${this.index - 1}`)
-        this.index--
-        this.normalize()
-        return this
-    }
-
-    goto(index: number): DeckController {
-        dumper.debug(`goto: ${this.index} --> ${index}`)
-        this.index = index
-        this.normalize()
-        return this
-    }
-
-    private normalize() {
-        if (this.index > this.slides.length - 1) this.index = this.slides.length - 1
-        if (this.index < 0) this.index = 0
-    }
+function next() {
+    currentDeck.update(d => {
+        d.index++
+        const len = get(slides).length
+        if (d.index > len - 1) d.index = len - 1
+        return d
+    })
 }
 
-function createDeck() {
-    const { subscribe, set, update } = writable<DeckController>(
-        new DeckController()
-    );
-
-    return {
-        subscribe,
-        set,
-        add: (slide: SlideDescriptor) => update((d) => d.add(slide)),
-        goto: (index: number) => update(d => d.goto(index)),
-        next: () => update(d => d.next()),
-        prev: () => update(d => d.prev()),
-    };
+function prev() {
+    currentDeck.update(d => {
+        d.index--
+        if (d.index < 0) d.index = 0
+        return d
+    })
 }
 
-const deck = createDeck();
-
-export { allDecks, deck, currentDeck, DeckDescriptor, SlideDescriptor, deckComponent };
+export { allDescriptors, currentDeck, DeckDescriptor, SlideDescriptor, currentComponent, slides, next, prev };

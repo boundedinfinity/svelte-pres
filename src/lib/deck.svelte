@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
-    import { deck } from "$lib/deck-utils";
+    import { slides } from "$lib/deck-utils";
 
     onDestroy(() => {
-        $deck.slides.length = 0;
+        $slides.length = 0;
     });
 </script>
 

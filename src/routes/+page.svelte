@@ -1,16 +1,20 @@
 <script lang="ts">
-    import { allDecks, currentDeck, DeckDescriptor } from "$lib/deck-utils";
+    import {
+        allDescriptors,
+        currentDeck,
+        DeckDescriptor,
+    } from "$lib/deck-utils";
     import { goto } from "$app/navigation";
 
     function setModule(deck: DeckDescriptor, path: string) {
         $currentDeck = deck;
-        goto(path)
+        goto(path);
     }
 </script>
 
 <ul>
-    {#each $allDecks as deck}
-        <li>
+    {#each $allDescriptors as deck}
+        <li class:current={deck.path == $currentDeck.path}>
             <div>
                 <h3>{deck.title}</h3>
                 <ul>
@@ -40,3 +44,9 @@
         </li>
     {/each}
 </ul>
+
+<style>
+    .current {
+        border: 1px solid red;
+    }
+</style>
