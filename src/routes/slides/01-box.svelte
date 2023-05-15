@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     export const meta = {
-        title: "All in one",
+        title: "TLS Cluster",
         labels: ['one', 'two']
     };
 </script>

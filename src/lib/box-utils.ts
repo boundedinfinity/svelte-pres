@@ -58,9 +58,7 @@ function parseSymbol(symbol: string, debug: boolean): ItemConfig {
                 break;
             case "]":
                 if (current.parent) {
-                    const child = current;
-                    current = current.parent;
-                    current.children.push(child);
+                    current = current.parent
                 } else {
                     if (debug)
                         dumpl(current, { name: "parseSymbol(no parent)" });

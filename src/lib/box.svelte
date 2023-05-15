@@ -39,10 +39,9 @@
         display: grid;
         grid-template-areas: var(--area);
         grid-auto-columns: 1fr;
+        grid-auto-rows: 1fr;
         grid-auto-flow: column;
-        /* grid-template-columns: repeat(--cols, 1fr); */
-        grid-template-rows: repeat(--rows, 1fr);
-        width: 100%;
+        width: max-content;
         height: 100%;
         gap: var(--gap, 0.5rem);
         box-sizing: border-box;

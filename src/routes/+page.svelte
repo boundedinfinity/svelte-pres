@@ -21,13 +21,13 @@
                     <li>Path: {deck.path}</li>
                     <li>
                         <button on:click={() => setModule(deck, "/viewer")}>
-                            Viewer</button
-                        >
+                            Viewer
+                        </button>
                     </li>
                     <li>
-                        <button on:click={() => setModule(deck, "/presenter")}
-                            >Presenter</button
-                        >
+                        <button on:click={() => setModule(deck, "/presenter")}>
+                            Presenter
+                        </button>
                     </li>
                     {#if deck.labels}
                         <li>

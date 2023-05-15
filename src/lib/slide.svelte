@@ -15,7 +15,7 @@
             out:sfade={{ duration: 50 }}
         >
             <h1>{title}</h1>
-            slide <slot />
+            <slot />
         </div>
     {:else}
         <div class:show={$currentDeck.index == slide.index}>
