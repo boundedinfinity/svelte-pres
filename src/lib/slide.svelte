@@ -9,11 +9,7 @@
 
 {#key slide.index}
     {#if fade}
-        <div
-            class:show={$currentDeck.index == slide.index}
-            in:sfade={{ delay: 50 }}
-            out:sfade={{ duration: 50 }}
-        >
+        <div class:show={$currentDeck.index == slide.index}>
             <h1>{title}</h1>
             <slot />
         </div>
