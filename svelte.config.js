@@ -2,7 +2,6 @@
 // https://dev.to/theether0/sveltekit-with-socketio-and-nodejs-285h
 import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/kit/vite';
-// import { webSocketServer } from "./websocket.js";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -17,9 +16,9 @@ const config = {
         adapter: adapter()
     },
 
-    // vite: {
-    //     plugins: [webSocketServer]
-    // }
+    vitePlugin: {
+        inspector: true,
+    }
 };
 
 export default config;
